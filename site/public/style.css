@@ -1,0 +1,382 @@
+@font-face {
+  font-family: "Roboto";
+  src: url("/fonts/roboto-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* The app's palette (app/src/main/java/tv/hackertube/Theme.kt), plus a hover step for the orange. */
+  --black: #000000;
+  --gray-950: #0F0F0F;
+  --gray-900: #272727;
+  --gray-400: #AAAAAA;
+  --gray-100: #F1F1F1;
+  --orange-500: #FF6600;
+  --orange-400: #FF7A3C;
+  --blue-400: #3EA6FF;
+
+  --color-bg: var(--gray-950);
+  --color-bg-surface: var(--gray-900);
+  --color-bg-code: var(--gray-950);
+  --color-bg-device: var(--black);
+  --color-text: var(--gray-100);
+  --color-text-secondary: var(--gray-400);
+  --color-text-link: var(--blue-400);
+  --color-text-accent: var(--orange-500);
+  --color-text-on-accent: var(--gray-950);
+  --color-accent-solid: var(--orange-500);
+  --color-accent-solid-hover: var(--orange-400);
+  --color-accent-glow: #FF66001F;
+  --shadow-border: 0 0 0 1px #FFFFFF14;
+  --image-outline: #FFFFFF1A;
+
+  --font-sans: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --page-margin: clamp(1.25rem, 4vw, 2.5rem);
+  --bezel: clamp(0.375rem, 1vw, 0.75rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+pre {
+  margin: 0;
+}
+
+:focus-visible {
+  outline-offset: 3px;
+}
+
+a {
+  color: var(--color-text-link);
+  text-decoration-line: underline;
+  text-decoration-thickness: from-font;
+  text-underline-position: from-font;
+  transition-property: color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+@media (hover: hover) {
+  a:hover {
+    color: var(--color-text);
+  }
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+.container {
+  width: min(100% - 2 * var(--page-margin), 70rem);
+  margin-inline: auto;
+}
+
+/* Hero */
+
+.hero {
+  padding-block: clamp(3rem, 8vw, 6rem) 1rem;
+  background: radial-gradient(in oklab 70% 35% at 50% 62%, var(--color-accent-glow), transparent);
+}
+
+.mark {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.mark rect {
+  fill: var(--color-accent-solid);
+}
+
+.mark path {
+  fill: var(--color-text);
+}
+
+h1 {
+  margin-block-start: 1.5rem;
+  font-size: clamp(2.5rem, 1.5rem + 4.5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.brand {
+  color: var(--color-text-accent);
+}
+
+.lede {
+  max-width: 34rem;
+  margin-block-start: 1rem;
+  color: var(--color-text-secondary);
+  font-size: 1.25rem;
+  text-wrap: pretty;
+}
+
+.actions {
+  margin-block-start: 2rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.5rem;
+  padding-inline: 1.375rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-solid);
+  color: var(--color-text-on-accent);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition-property: background-color, scale;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+.button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
+}
+
+@media (hover: hover) {
+  .button:hover {
+    background: var(--color-accent-solid-hover);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button:active {
+    scale: 0.96;
+  }
+}
+
+.meta {
+  margin-block-start: 0.75rem;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* The screenshot sits in a TV bezel with a stand under it. */
+.tv {
+  position: relative;
+  margin-block: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+  padding: var(--bezel);
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius-sm) + var(--bezel));
+  background: var(--color-bg-device);
+  box-shadow: var(--shadow-border);
+}
+
+.tv::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 38%;
+  height: calc(var(--bezel) * 1.5);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  background: var(--color-bg-surface);
+}
+
+.tv img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  outline: 1px solid var(--image-outline);
+  outline-offset: -1px;
+}
+
+/* The hero enters in order: mark, title, pitch, download, screenshot. */
+.enter {
+  animation: fade-in 300ms ease-out both;
+}
+
+.enter:nth-child(2) { animation-delay: 100ms; }
+.enter:nth-child(3) { animation-delay: 200ms; }
+.enter:nth-child(4) { animation-delay: 300ms; }
+.enter:nth-child(5) { animation-delay: 400ms; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .enter {
+    animation-name: fade-in-up;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
+}
+
+/* Sections */
+
+.section {
+  padding-block: clamp(4rem, 10vw, 6rem) 0;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.intro,
+.section p {
+  max-width: 65ch;
+}
+
+.intro {
+  margin-block-start: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+}
+
+.card .icon {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
+}
+
+h3 {
+  margin-block-start: 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.card p {
+  margin-block-start: 0.5rem;
+  color: var(--color-text-secondary);
+}
+
+.card strong {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.card code {
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-code);
+  color: var(--color-text);
+  font-size: 0.875em;
+  white-space: nowrap;
+}
+
+.card pre {
+  margin-block-start: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-code);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.card pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+  white-space: inherit;
+}
+
+#credits + p {
+  margin-block-start: 1rem;
+}
+
+.section p + p {
+  margin-block-start: 0.5rem;
+}
+
+/* Footer */
+
+.footer {
+  padding-block: clamp(4rem, 10vw, 6rem) 3rem;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+}
+
+.footer a {
+  display: inline-block;
+  padding-block: 0.25rem;
+  color: var(--color-text);
+}
+
+@media (hover: hover) {
+  .footer a:hover {
+    color: var(--color-text-link);
+  }
+}
+
+.footer p {
+  max-width: 65ch;
+  margin-block-start: 0.75rem;
+}

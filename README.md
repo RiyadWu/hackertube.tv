@@ -44,6 +44,20 @@ adb install app/build/outputs/apk/release/app-release.apk
 
 The release build uses the debug key. Thus, you can install it on your TV without more setup.
 
+## Website
+
+The `site` folder holds the landing page at [hackertube.tv](https://hackertube.tv). The page is HTML and CSS in `site/public`. The page has no build step.
+
+A Cloudflare Worker (`site/worker.js`) sends the files in `site/public`. The Worker also redirects `www.hackertube.tv` and `http://` addresses to `https://hackertube.tv`.
+
+To deploy the site, use this command in the `site` folder:
+
+```sh
+bunx wrangler@latest deploy
+```
+
+When you release a new version of the app, replace `site/public/hackertube-tv.apk` with the new APK. Then deploy the site again.
+
 ## How it works
 
 The app reads the JSON API of hackertube.org. The website uses the same API: `/api/feed`, `/api/list`, `/api/search`, `/api/video`, `/api/related`, `/api/browse`, `/api/playlists` and `/api/playlist`.

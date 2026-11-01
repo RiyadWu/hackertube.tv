@@ -1,0 +1,15 @@
+{
+  "name": "hackertube-tv",
+  "account_id": "8e642ff58d22bbbe4eda926dda88649e",
+  "main": "./worker.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "routes": [
+    { "pattern": "hackertube.tv", "custom_domain": true },
+    { "pattern": "www.hackertube.tv", "custom_domain": true }
+  ]
+}
