@@ -4,7 +4,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.Locale
 
-// The same wording as hackertube.org.
+// The wording of hackertube.org, in Chinese.
 
 /** "4:48" or "1:02:03". */
 fun duration(seconds: Int?): String {
@@ -15,26 +15,46 @@ fun duration(seconds: Int?): String {
     return if (h > 0) "%d:%02d:%02d".format(h, m, s) else "%d:%02d".format(m, s)
 }
 
-/** "6 hr 32 min" or "45 min". */
-fun hours(minutes: Int): String = if (minutes >= 60) "${minutes / 60} hr ${minutes % 60} min" else "$minutes min"
+/** "6 小时 32 分钟" or "45 分钟". */
+fun hours(minutes: Int): String = if (minutes >= 60) "${minutes / 60} 小时 ${minutes % 60} 分钟" else "$minutes 分钟"
 
-/** "43.9M views • 13 years ago". */
+/** "4390万次观看 • 13 年前". */
 fun Video.stats(separator: String = " • "): String =
     listOfNotNull(views?.let(::viewCount), published?.let(::ago)).joinToString(separator)
 
 private fun viewCount(n: Long): String = when {
-    n >= 1_000_000_000 -> "${oneDecimal(n / 1e9)}B views"
-    n >= 1_000_000 -> "${oneDecimal(n / 1e6)}M views"
-    n >= 1_000 -> "${Math.round(n / 1e3)}K views"
-    else -> "$n views"
+    n >= 100_000_000 -> "${oneDecimal(n / 1e8)}亿次观看"
+    n >= 10_000 -> "${oneDecimal(n / 1e4)}万次观看"
+    else -> "${n}次观看"
 }
 
 private fun oneDecimal(x: Double) = "%.1f".format(Locale.US, x).removeSuffix(".0")
 
 private fun ago(iso: String): String {
     val days = Duration.between(Instant.parse(iso), Instant.now()).toDays()
-    val (n, unit) = listOf(365L to "year", 30L to "month", 7L to "week", 1L to "day")
+    val (n, unit) = listOf(365L to "年", 30L to "个月", 7L to "周", 1L to "天")
         .map { (size, unit) -> days / size to unit }
-        .firstOrNull { it.first >= 1 } ?: return "today"
-    return "$n $unit${if (n > 1) "s" else ""} ago"
+        .firstOrNull { it.first >= 1 } ?: return "今天"
+    return "$n $unit前"
+}
+
+/** hackertube.org's content_type and shelf_life values, as the details page shows them. */
+fun typeLabel(type: String): String = when (type) {
+    "talk" -> "演讲"
+    "lecture" -> "讲座"
+    "course" -> "课程"
+    "documentary" -> "纪录片"
+    "explainer" -> "讲解"
+    "interview" -> "访谈"
+    "podcast" -> "播客"
+    "tutorial" -> "教程"
+    "demo" -> "演示"
+    "news" -> "新闻"
+    "commentary" -> "评论"
+    "comedy" -> "喜剧"
+    "music" -> "音乐"
+    "other" -> "其他"
+    "evergreen" -> "常看常新"
+    "dated" -> "有时效"
+    else -> type
 }

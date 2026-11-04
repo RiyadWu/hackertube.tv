@@ -26,18 +26,47 @@ class HomePage(library: Library) : Page() {
     private val seed = (0 until 1_000_000).random()
     private val everything: Feed = Feed { offset, n -> Api.feed(library, seed, offset, n) }
 
-    val areas = Remote { Api.areas() }
-    var area by mutableStateOf<Area?>(null)
+    /** The content_type chip, as on hackertube-zh's feed; null is the personal feed. */
+    var type by mutableStateOf<String?>(null)
         private set
     var feed: Feed by mutableStateOf(everything)
         private set
     var grid = LazyGridState()
         private set
 
-    fun show(area: Area?) {
-        this.area = area
-        feed = if (area == null) everything else Feed { offset, n -> Api.list(mapOf("area" to area.id), offset, n) }
+    fun show(type: String?) {
+        this.type = type
+        feed = if (type == null) everything else Feed { offset, n -> Api.list(mapOf("type" to type), offset, n) }
         grid = LazyGridState()
+    }
+}
+
+/** One topic area from the sidebar, filtered by type and sorted, like hackertube-zh's area feed. */
+class AreaPage(val area: Area) : Page() {
+    var type by mutableStateOf<String?>(null)
+        private set
+    /** An API sort ("hn", "recent"); null is the site's default, the overall score. */
+    var sort by mutableStateOf<String?>(null)
+        private set
+    var feed: Feed by mutableStateOf(load())
+        private set
+    var grid = LazyGridState()
+        private set
+
+    fun show(type: String? = this.type, sort: String? = this.sort) {
+        this.type = type
+        this.sort = sort
+        feed = load()
+        grid = LazyGridState()
+    }
+
+    private fun load(): Feed {
+        val filters = buildMap {
+            put("area", area.id)
+            type?.let { put("type", it) }
+            sort?.let { put("sort", it) }
+        }
+        return Feed { offset, n -> Api.list(filters, offset, n) }
     }
 }
 
@@ -47,13 +76,13 @@ class GridPage(
     val feed: Feed,
     val crumb: String? = null,
     val subtitle: String? = null,
-    val empty: String = "Nothing here yet.",
+    val empty: String = "这里还没有内容。",
 ) : Page() {
     val grid = LazyGridState()
 
     companion object {
         fun filtered(title: String, filters: Map<String, String>, crumb: String? = null, subtitle: String? = null) =
-            GridPage(title, Feed { offset, n -> Api.list(filters, offset, n) }, crumb, subtitle, "No videos match these filters.")
+            GridPage(title, Feed { offset, n -> Api.list(filters, offset, n) }, crumb, subtitle, "没有符合条件的视频。")
 
         /** The videos in one of the library's lists, newest first. */
         fun saved(title: String, vids: List<String>, empty: String): GridPage {

@@ -114,7 +114,7 @@ fun VideoRow(video: Video, modifier: Modifier = Modifier, number: Int? = null) {
                 )
                 if (video.via != null) {
                     Text(
-                        "Topic match · ${video.via}",
+                        "按主题匹配 · ${video.via}",
                         style = Type.sub.copy(fontSize = 11.sp),
                         modifier = Modifier.padding(top = 8.dp).background(Colors.bg2, RoundedCornerShape(4.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -136,7 +136,7 @@ fun Thumbnail(video: Video, modifier: Modifier = Modifier) {
                 Modifier.align(Alignment.TopEnd).padding(6.dp).size(26.dp)
                     .background(Color.Black.copy(alpha = .8f), RoundedCornerShape(4.dp)),
                 contentAlignment = Alignment.Center,
-            ) { Icon(painterResource(R.drawable.ic_check), contentDescription = "In Watch later", Modifier.size(18.dp), tint = Color.White) }
+            ) { Icon(painterResource(R.drawable.ic_check), contentDescription = "已在稍后观看", Modifier.size(18.dp), tint = Color.White) }
         }
         val length = duration(video.durationSeconds)
         if (length.isNotEmpty()) {
@@ -269,7 +269,7 @@ fun <T : Any> Loaded(remote: Remote<T>, content: @Composable (T) -> Unit) {
     when {
         value != null -> content(value)
         error != null -> Failed(error, retry = { scope.launch { remote.load() } })
-        else -> Status("Loading…")
+        else -> Status("加载中…")
     }
 }
 
@@ -279,12 +279,12 @@ fun Failed(error: Exception, retry: () -> Unit) {
     val busy = error is HttpError && (error.code == 429 || error.code == 503)
     Column(Modifier.fillMaxWidth().padding(vertical = 32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            if (busy) "Lots of people on HackerTube right now. Give it a minute and try again."
-            else "Couldn't reach HackerTube. Check the TV's internet connection.",
+            if (busy) "HackerTube 现在人很多，等一分钟再试。"
+            else "连不上 HackerTube，请检查电视的网络。",
             style = Type.sub.copy(fontSize = 14.sp),
         )
         Spacer(Modifier.height(12.dp))
-        Chip("Try again", retry)
+        Chip("重试", retry)
     }
 }
 

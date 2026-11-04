@@ -56,6 +56,10 @@ fun DetailsScreen(page: DetailsPage) {
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
                     )
+                    if (video.titleEn.isNotEmpty() && video.titleEn != video.title) {
+                        // the original, to search for it or check the translation
+                        Text(video.titleEn, style = Type.sub.copy(fontSize = 13.sp), maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(video.channel, style = Type.body.copy(fontWeight = FontWeight.Bold))
                         video.hn?.let { Text(recommendations(it), style = Type.sub.copy(fontSize = 13.sp)) }
@@ -65,7 +69,7 @@ fun DetailsScreen(page: DetailsPage) {
                         modifier = Modifier.padding(vertical = 6.dp),
                     ) {
                         Pill(
-                            "Play on YouTube",
+                            "播放",
                             icon = R.drawable.ic_play_arrow_filled,
                             onClick = { nav.play(video) },
                             modifier = Modifier.restoreFocus(page, "play", first = true),
@@ -73,7 +77,7 @@ fun DetailsScreen(page: DetailsPage) {
                         )
                         val liked = video.vid in library.liked
                         Pill(
-                            "Like",
+                            "喜欢",
                             onClick = { library.like(video.vid) },
                             modifier = Modifier.restoreFocus(page, "like"),
                             icon = if (liked) R.drawable.ic_thumb_up_filled else R.drawable.ic_thumb_up,
@@ -81,7 +85,7 @@ fun DetailsScreen(page: DetailsPage) {
                         )
                         val disliked = video.vid in library.disliked
                         Pill(
-                            "Not for me",
+                            "不感兴趣",
                             onClick = { library.dislike(video.vid) },
                             modifier = Modifier.restoreFocus(page, "dislike"),
                             icon = if (disliked) R.drawable.ic_thumb_down_filled else R.drawable.ic_thumb_down,
@@ -89,7 +93,7 @@ fun DetailsScreen(page: DetailsPage) {
                         )
                         val saved = video.vid in library.later
                         Pill(
-                            if (saved) "Saved" else "Watch later",
+                            if (saved) "已保存" else "稍后观看",
                             icon = if (saved) R.drawable.ic_check else R.drawable.ic_schedule,
                             onClick = { library.toggleLater(video.vid) },
                             modifier = Modifier.restoreFocus(page, "later"),
@@ -97,7 +101,8 @@ fun DetailsScreen(page: DetailsPage) {
                         )
                     }
                     Text(
-                        listOf(video.stats(" · "), video.type, video.shelfLife).filter { it.isNotEmpty() }.joinToString(" · "),
+                        listOf(video.stats(" · "), typeLabel(video.type), typeLabel(video.shelfLife))
+                            .filter { it.isNotEmpty() }.joinToString(" · "),
                         style = Type.sub.copy(fontSize = 13.sp),
                     )
                 }
@@ -124,7 +129,7 @@ fun DetailsScreen(page: DetailsPage) {
 
         item(key = "#next") {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Up next", style = Type.section)
+                Text("接下来看", style = Type.section)
                 Loaded(page.related) { related ->
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -143,7 +148,7 @@ fun DetailsScreen(page: DetailsPage) {
         if (comments.isNotEmpty()) {
             item(key = "#comments") {
                 Text(
-                    "${comments.size} comment${if (comments.size == 1) "" else "s"} from Hacker News",
+                    "Hacker News 上的 ${comments.size} 条评论",
                     style = Type.section,
                 )
             }
@@ -169,7 +174,7 @@ private fun CommentCard(comment: Comment, modifier: Modifier) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("@${comment.author}", style = Type.body.copy(fontWeight = FontWeight.Bold))
                 Text(
-                    listOf(comment.ym.take(4), "in “${comment.story}”").joinToString(" · "),
+                    listOf(comment.ym.take(4), "出自「${comment.story}」").joinToString(" · "),
                     style = Type.sub.copy(fontSize = 13.sp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -177,7 +182,7 @@ private fun CommentCard(comment: Comment, modifier: Modifier) {
             }
             Text(
                 // the API marks where a comment linked this video, or something else
-                comment.text.replace("[VIDEO]", "▶ this video").replace("[LINK]", "link"),
+                comment.text.replace("[VIDEO]", "▶ 本视频").replace("[LINK]", "链接"),
                 style = Type.body.copy(fontSize = 14.sp, lineHeight = 21.sp),
             )
         }
@@ -185,11 +190,10 @@ private fun CommentCard(comment: Comment, modifier: Modifier) {
 }
 
 private fun recommendations(hn: HnStats): String {
-    fun plural(n: Int, word: String) = "$n $word${if (n == 1) "" else "s"}"
     val years = "${hn.first}–${hn.last}"
     return if (hn.recommenders > 0) {
-        "${plural(hn.recommenders, "HN recommender")} · recommended in ${plural(hn.recMonths, "month")}, $years"
+        "${hn.recommenders} 位 HN 网友推荐 · ${hn.recMonths} 个月里都有人推荐，$years"
     } else {
-        "Cited ${hn.mentions}× on HN, $years"
+        "在 HN 上被提到 ${hn.mentions} 次，$years"
     }
 }

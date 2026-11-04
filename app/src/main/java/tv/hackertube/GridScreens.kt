@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -21,40 +22,85 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/** The type chips of hackertube-zh's feed. */
+private val videoTypes = listOf(
+    "talk" to "演讲",
+    "lecture" to "讲座",
+    "course" to "课程",
+    "explainer" to "讲解",
+    "documentary" to "纪录片",
+    "interview" to "访谈",
+    "demo" to "演示",
+)
+
+/** hackertube-zh's sort menu, as chips. */
+private val sorts = listOf(
+    null to "综合排序",
+    "hn" to "推荐最多",
+    "recent" to "最近提及",
+)
+
 @Composable
 fun HomeScreen(page: HomePage) {
-    LaunchedEffect(page.areas) { page.areas.load() }
-    // Until the feed arrives, "All" holds focus, or the sidebar takes it and stays shut.
-    // Then focus moves on to the first video, unless the viewer has moved it.
-    LaunchedEffect(page.feed) {
-        snapshotFlow { page.feed.videos.isNotEmpty() }.first { it }
-        if (page.focus == ALL) {
-            page.focus = null
-            page.needsFocus = true
-        }
-    }
-    VideoGrid(page, page.feed, page.grid, empty = "No videos match these filters.") {
+    HoldFocusUntilLoaded(page, page.feed)
+    VideoGrid(page, page.feed, page.grid, empty = "没有符合条件的视频。") {
         fullWidth("wordmark") { Wordmark(Modifier.padding(start = 4.dp)) }
-        fullWidth("areas") {
-            // the topic areas from the site's sidebar, as YouTube's chip bar
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(vertical = 6.dp, horizontal = 4.dp),
-            ) {
+        fullWidth("types") {
+            // the topic areas are in the sidebar; the chip bar filters by type, as on hackertube-zh
+            ChipRow {
                 item {
                     Chip(
-                        "All",
+                        "全部",
                         { page.show(null) },
                         Modifier.restoreFocus(page, ALL, first = page.feed.videos.isEmpty()),
-                        selected = page.area == null,
+                        selected = page.type == null,
                     )
                 }
-                items(page.areas.value.orEmpty(), key = { it.id }) { area ->
+                items(videoTypes, key = { it.first }) { (type, label) ->
+                    Chip(label, { page.show(type) }, Modifier.restoreFocus(page, "type:$type"), selected = page.type == type)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AreaScreen(page: AreaPage) {
+    val nav = LocalNavigator.current
+    HoldFocusUntilLoaded(page, page.feed)
+    VideoGrid(page, page.feed, page.grid, empty = "没有符合条件的视频。") {
+        fullWidth("head") { PageHead(page.area.name, subtitle = "${page.area.count} 个视频") }
+        fullWidth("types") {
+            ChipRow {
+                item {
                     Chip(
-                        area.name,
-                        { page.show(area) },
-                        Modifier.restoreFocus(page, "area:${area.id}"),
-                        selected = page.area == area,
+                        "全部类型",
+                        { page.show(type = null) },
+                        Modifier.restoreFocus(page, ALL, first = page.feed.videos.isEmpty()),
+                        selected = page.type == null,
+                    )
+                }
+                items(videoTypes, key = { it.first }) { (type, label) ->
+                    Chip(label, { page.show(type = type) }, Modifier.restoreFocus(page, "type:$type"), selected = page.type == type)
+                }
+            }
+        }
+        fullWidth("sorts") {
+            ChipRow {
+                items(sorts, key = { it.second }) { (sort, label) ->
+                    Chip(label, { page.show(sort = sort) }, Modifier.restoreFocus(page, "sort:$sort"), selected = page.sort == sort)
+                }
+            }
+        }
+        fullWidth("categories") {
+            // the area's finer topics, as on the Categories page
+            ChipRow {
+                items(page.area.categories, key = { it.id }) { category ->
+                    Chip(
+                        category.name,
+                        { nav.open(GridPage.filtered(category.name, mapOf("cat" to category.id), crumb = page.area.name)) },
+                        Modifier.restoreFocus(page, "cat:${category.id}"),
+                        trailing = "${category.count}",
                     )
                 }
             }
@@ -62,7 +108,29 @@ fun HomeScreen(page: HomePage) {
     }
 }
 
-private const val ALL = "area:"
+/**
+ * Until [feed] arrives, the first chip holds focus, or the sidebar takes it and stays shut.
+ * Then focus moves on to the first video, unless the viewer has moved it.
+ */
+@Composable
+private fun HoldFocusUntilLoaded(page: Page, feed: Feed) {
+    LaunchedEffect(feed) {
+        snapshotFlow { feed.videos.isNotEmpty() }.first { it }
+        if (page.focus == ALL) {
+            page.focus = null
+            page.needsFocus = true
+        }
+    }
+}
+
+@Composable
+private fun ChipRow(content: LazyListScope.() -> Unit) = LazyRow(
+    horizontalArrangement = Arrangement.spacedBy(10.dp),
+    contentPadding = PaddingValues(vertical = 6.dp, horizontal = 4.dp),
+    content = content,
+)
+
+private const val ALL = "chip:all"
 
 @Composable
 fun GridScreen(page: GridPage) {
@@ -101,7 +169,7 @@ private fun VideoGrid(
             val error = feed.error
             when {
                 error != null -> Failed(error, retry = { scope.launch { feed.more() } })
-                feed.loading -> Status("Loading…")
+                feed.loading -> Status("加载中…")
                 feed.done && feed.videos.isEmpty() -> Status(empty)
             }
         }

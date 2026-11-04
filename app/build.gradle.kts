@@ -11,11 +11,26 @@ android {
     }
 
     defaultConfig {
-        applicationId = "tv.hackertube"
+        // its own id, so it installs next to the English app
+        applicationId = "tv.hackertube.zh"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.0-zh.1"
+    }
+
+    // Release signing comes from the environment (HT_KEYSTORE, HT_KEYSTORE_PASSWORD, HT_KEY_ALIAS,
+    // HT_KEY_PASSWORD); without it the release build uses the debug key, as upstream does.
+    val keystore = System.getenv("HT_KEYSTORE")
+    signingConfigs {
+        if (keystore != null) {
+            create("release") {
+                storeFile = file(keystore)
+                storePassword = System.getenv("HT_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("HT_KEY_ALIAS")
+                keyPassword = System.getenv("HT_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -23,8 +38,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-            // Signed with the debug key so `./gradlew installRelease` works out of the box.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(if (keystore != null) "release" else "debug")
         }
     }
 

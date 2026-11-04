@@ -55,11 +55,11 @@ fun SearchScreen(page: SearchPage) {
         val videos = results?.value
         when {
             results == null -> item(key = "#hint") {
-                Status("Search the videos Hacker News recommends, by words or by meaning.")
+                Status("搜索 Hacker News 推荐的视频：中文会在中文标题和导读里找，英文还能按意思搜。")
             }
             error != null -> item(key = "#status") { Failed(error, retry = { scope.launch { results.load() } }) }
-            videos == null -> item(key = "#status") { Status("Searching…") }
-            videos.isEmpty() -> item(key = "#status") { Status("No results.") }
+            videos == null -> item(key = "#status") { Status("搜索中…") }
+            videos.isEmpty() -> item(key = "#status") { Status("没有结果。") }
             else -> itemsIndexed(videos, key = { _, video -> video.vid }) { i, video ->
                 VideoRow(video, Modifier.widthIn(max = 900.dp).restoreFocus(page, video.vid, first = i == 0))
             }
@@ -93,7 +93,7 @@ private fun SearchField(page: SearchPage, modifier: Modifier) {
             ) {
                 Icon(painterResource(R.drawable.ic_search), contentDescription = null, tint = Colors.muted)
                 Box(Modifier.weight(1f).padding(start = 12.dp)) {
-                    if (page.query.isEmpty()) Text("Search", style = Type.body.copy(fontSize = 18.sp, color = Colors.muted))
+                    if (page.query.isEmpty()) Text("搜索", style = Type.body.copy(fontSize = 18.sp, color = Colors.muted))
                     field()
                 }
             }

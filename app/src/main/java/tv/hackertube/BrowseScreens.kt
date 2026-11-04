@@ -40,7 +40,7 @@ fun CategoriesScreen(page: CategoriesPage) {
         PageColumn(page.list) {
             item(key = "#head") {
                 Column {
-                    PageHead("Categories")
+                    PageHead("分类")
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         quickLinks.forEachIndexed { i, (title, filters) ->
                             Pill(
@@ -81,10 +81,10 @@ fun CategoriesScreen(page: CategoriesPage) {
 
 /** The shortcuts at the top of the site's Categories page. */
 private val quickLinks = listOf(
-    "Recently recommended" to mapOf("sort" to "recent"),
-    "Longs" to mapOf("dur" to "xlong"),
-    "Hidden gems" to mapOf("gems" to "1"),
-    "All videos" to emptyMap(),
+    "最近推荐" to mapOf("sort" to "recent"),
+    "长视频" to mapOf("dur" to "xlong"),
+    "冷门佳作" to mapOf("gems" to "1"),
+    "全部视频" to emptyMap(),
 )
 
 @Composable
@@ -93,8 +93,8 @@ fun PlaylistsScreen(page: PlaylistsPage) {
         PageColumn(page.list) {
             item(key = "#head") {
                 PageHead(
-                    "Playlists",
-                    subtitle = "Curated by Claude from what Hacker News recommends, each in a deliberate order.",
+                    "片单",
+                    subtitle = "由 Claude 从 Hacker News 推荐的视频中挑选，每个片单都按特意安排的顺序排列。",
                 )
             }
             val first = playlists.firstOrNull { (it.tier ?: "deep") == tiers.first().tier }
@@ -127,8 +127,8 @@ fun PlaylistsScreen(page: PlaylistsPage) {
 private class Tier(val tier: String, val title: String, val blurb: String)
 
 private val tiers = listOf(
-    Tier("start", "Start here", "Broad, essential lists for your first visit."),
-    Tier("deep", "Deep dives", "One obsession each, for when you want to go down a rabbit hole."),
+    Tier("start", "从这里开始", "覆盖面广的必看片单，适合第一次来。"),
+    Tier("deep", "深入专题", "每个片单只钻一个主题，适合想一头扎进去的时候。"),
 )
 
 @Composable
@@ -146,7 +146,7 @@ private fun PlaylistTile(playlist: PlaylistCard, modifier: Modifier, focusModifi
             Box {
                 Mosaic(playlist.cover)
                 Text(
-                    "${playlist.count} videos",
+                    "${playlist.count} 个视频",
                     style = Type.badge,
                     modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp)
                         .background(Color.Black.copy(alpha = .8f), RoundedCornerShape(4.dp))
@@ -173,10 +173,10 @@ fun PlaylistScreen(page: PlaylistPage) {
                 Row(horizontalArrangement = Arrangement.spacedBy(24.dp), modifier = Modifier.padding(bottom = 16.dp)) {
                     Mosaic(playlist.videos.map { it.vid }, Modifier.width(320.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Playlists", style = Type.sub)
+                        Text("片单", style = Type.sub)
                         Text(playlist.title, style = Type.pageTitle)
                         Text(
-                            "Curated by Claude · ${playlist.videos.size} videos · ${hours(playlist.minutes)}",
+                            "Claude 挑选 · ${playlist.videos.size} 个视频 · ${hours(playlist.minutes)}",
                             style = Type.sub,
                         )
                         Text(playlist.intro, style = Type.body, modifier = Modifier.padding(top = 12.dp))

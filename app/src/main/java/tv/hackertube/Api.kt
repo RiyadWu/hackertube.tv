@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -19,7 +20,7 @@ object Api {
     private val json = Json { ignoreUnknownKeys = true }
 
     /** The Home feed: videos like the liked ones, without the disliked and the already seen. */
-    suspend fun feed(library: Library, seed: Int, offset: Int, n: Int): List<Video> = get(
+    suspend fun feed(library: Library, seed: Int, offset: Int, n: Int): List<Video> = get<List<Video>>(
         "feed",
         "like" to library.liked.joinToString(","),
         "dislike" to library.disliked.joinToString(","),
@@ -28,27 +29,28 @@ object Api {
         "seed" to "$seed",
         "offset" to "$offset",
         "n" to "$n",
-    )
+    ).zh()
 
     /** Every video that matches [filters] (such as `cat`, `area`, `dur`, `sort`), best first. */
     suspend fun list(filters: Map<String, String>, offset: Int, n: Int): List<Video> =
-        get("list", *filters.toList().toTypedArray(), "offset" to "$offset", "n" to "$n")
+        get<List<Video>>("list", *filters.toList().toTypedArray(), "offset" to "$offset", "n" to "$n").zh()
 
-    suspend fun search(query: String): List<Video> = get<SearchResults>("search", "q" to query).results
+    suspend fun search(query: String): List<Video> =
+        if (Zh.isChinese(query)) docs(Zh.search(query)) else get<SearchResults>("search", "q" to query).results.zh()
 
-    suspend fun video(vid: String): VideoPage = get("video", "vid" to vid)
+    suspend fun video(vid: String): VideoPage = get<VideoPage>("video", "vid" to vid).zh()
 
-    suspend fun related(vid: String): List<Video> = get("related", "vid" to vid, "n" to "20")
+    suspend fun related(vid: String): List<Video> = get<List<Video>>("related", "vid" to vid, "n" to "20").zh()
 
     /** The videos for [vids], in the same order. */
     suspend fun docs(vids: List<String>): List<Video> =
-        if (vids.isEmpty()) emptyList() else get("docs", "vids" to vids.joinToString(","))
+        if (vids.isEmpty()) emptyList() else get<List<Video>>("docs", "vids" to vids.joinToString(",")).zh()
 
-    suspend fun areas(): List<Area> = get("browse")
+    suspend fun areas(): List<Area> = get<List<Area>>("browse").map { it.zh() }
 
-    suspend fun playlists(): List<PlaylistCard> = get("playlists")
+    suspend fun playlists(): List<PlaylistCard> = get<List<PlaylistCard>>("playlists").map { it.zh() }
 
-    suspend fun playlist(slug: String): Playlist = get("playlist", "slug" to slug)
+    suspend fun playlist(slug: String): Playlist = get<Playlist>("playlist", "slug" to slug).zh()
 
     private suspend inline fun <reified T> get(path: String, vararg params: Pair<String, String>): T {
         val url = base.newBuilder().addPathSegment(path).apply {
@@ -85,10 +87,17 @@ data class Video(
     val via: String? = null,
     /** A playlist's note on this video. */
     val note: String = "",
+    /** The original English title when [title] holds a translation (set by [zh], not the API). */
+    @Transient val titleEn: String = "",
 )
 
 @Serializable
-data class CategoryRef(val id: String, val name: String, @SerialName("area_name") val areaName: String = "")
+data class CategoryRef(
+    val id: String,
+    val name: String,
+    val area: String = "",
+    @SerialName("area_name") val areaName: String = "",
+)
 
 @Serializable
 data class HnStats(

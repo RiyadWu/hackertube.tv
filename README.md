@@ -4,6 +4,19 @@ An Android TV app for [HackerTube](https://hackertube.org), the videos that Hack
 
 ![The Home screen on a TV](docs/home.png)
 
+## 中文版（this fork）
+
+This fork, **HackerTube 中文** (`tv.hackertube.zh`), installs next to the English app and shows HackerTube in Simplified Chinese:
+
+- Video titles, summaries and "why HN recommends it", topic areas, categories, playlists with their intros and notes, and every screen of the app. The details page also shows the original English title.
+- The sidebar lists the 16 topic areas, as on [hackertube-zh](https://fjwangyantao.github.io/hackertube-zh/). An area opens with chips to filter by type (演讲, 讲座, 课程…) and sort, and its finer topics. Home has the type chips too.
+- Search in Chinese looks in the Chinese titles and summaries; search in English goes to hackertube.org as before.
+- Videos open in SmartTube when it is installed (for its auto-translated subtitles), else in YouTube.
+
+The text ships inside the app: `translations/zh/` holds the sources (see `translations/zh/NOTICE.md`), and `python3 -I scripts/build-zh.py` builds `app/src/main/resources/hackertube/zh.json`. Anything without a translation stays in English.
+
+CI (`.github/workflows/build.yml`) builds the APK and walks the app on an Android TV emulator, keeping a screenshot of each screen. For a release build signed with your own key, set `HT_KEYSTORE`, `HT_KEYSTORE_PASSWORD`, `HT_KEY_ALIAS` and `HT_KEY_PASSWORD`.
+
 ## Features
 
 The app has the same pages and the same look as hackertube.org:

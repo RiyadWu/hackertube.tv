@@ -10,7 +10,7 @@
         android:allowBackup="true"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
-        android:label="HackerTube"
+        android:label="HackerTube 中文"
         android:supportsRtl="true"
         android:theme="@style/Theme.HackerTube">
         <activity
