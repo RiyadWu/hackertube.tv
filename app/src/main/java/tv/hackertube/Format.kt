@@ -35,7 +35,7 @@ private fun ago(iso: String): String {
     val (n, unit) = listOf(365L to "年", 30L to "个月", 7L to "周", 1L to "天")
         .map { (size, unit) -> days / size to unit }
         .firstOrNull { it.first >= 1 } ?: return "今天"
-    return "$n $unit前"
+    return "$n ${unit}前"
 }
 
 /** hackertube.org's content_type and shelf_life values, as the details page shows them. */
