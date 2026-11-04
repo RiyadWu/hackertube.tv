@@ -62,8 +62,8 @@ shot details; check "details"
 key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN; sleep 2
 shot details-more
 
-# Back to Home, then the sidebar's Playlists (six below Home).
-key BACK BACK BACK; sleep 3
+# Back to Home (details -> area -> Home), then the sidebar's Playlists (six below Home).
+key BACK BACK; sleep 3
 key DPAD_LEFT DPAD_LEFT DPAD_LEFT; sleep 2
 key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
 shot sidebar-playlists
@@ -74,7 +74,7 @@ shot playlist; check "playlist"
 key DPAD_DOWN DPAD_DOWN; sleep 2
 shot playlist-videos
 
-# Categories (one above Playlists).
+# Categories (one above Playlists); playlist -> Playlists -> Home.
 key BACK BACK; sleep 3
 key DPAD_LEFT DPAD_LEFT DPAD_LEFT; sleep 2
 key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN

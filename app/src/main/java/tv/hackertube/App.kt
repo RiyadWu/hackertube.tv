@@ -103,7 +103,7 @@ fun App(library: Library) {
                 val areas = nav.areas.value.orEmpty()
                 if (areas.isNotEmpty()) {
                     Spacer(Modifier.height(8.dp))
-                    Box(Modifier.width(if (open) 196.dp else 32.dp).height(1.dp).padding(start = 12.dp).background(Colors.bg3))
+                    Box(Modifier.width(if (open) 236.dp else 32.dp).height(1.dp).padding(start = 12.dp).background(Colors.bg3))
                     if (open) Text("主题", style = Type.sub, modifier = Modifier.padding(start = 16.dp, top = 10.dp, bottom = 2.dp))
                     for (area in areas) {
                         val isCurrent = area.id == nav.area?.id
@@ -217,7 +217,7 @@ private fun SidebarItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val width by animateDpAsState(if (open) 220.dp else 56.dp, label = "sidebar item width")
+    val width by animateDpAsState(if (open) 260.dp else 56.dp, label = "sidebar item width")
     Surface(
         onClick = onClick,
         modifier = modifier.width(width).height(48.dp),
@@ -255,7 +255,7 @@ private fun SidebarItem(
  */
 @Composable
 private fun AreaItem(area: Area, current: Boolean, open: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val width by animateDpAsState(if (open) 220.dp else 56.dp, label = "sidebar area width")
+    val width by animateDpAsState(if (open) 260.dp else 56.dp, label = "sidebar area width")
     Surface(
         onClick = onClick,
         modifier = modifier.width(width).height(40.dp),
