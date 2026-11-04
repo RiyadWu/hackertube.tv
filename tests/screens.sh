@@ -37,34 +37,49 @@ adb shell monkey -p "$PKG" -c android.intent.category.LEANBACK_LAUNCHER 1 >/dev/
 sleep 25
 shot home; check "launch"
 
-key DPAD_RIGHT DPAD_RIGHT
+# Never press OK on a video: it would leave for SmartTube or YouTube.
+# Home: focus starts on the first video; Up goes to the type chips.
+key DPAD_UP DPAD_RIGHT
 shot home-type-chip
 key DPAD_CENTER; sleep 8
 shot home-talks; check "type chip"
 
+# Sidebar: entering it lands on Home; below Playlists come the topic areas.
 key DPAD_LEFT DPAD_LEFT DPAD_LEFT; sleep 2
 shot sidebar; check "sidebar"
 key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
 shot sidebar-areas
 key DPAD_CENTER; sleep 10
 shot area; check "area"
-
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN; sleep 2
+key DPAD_UP DPAD_UP DPAD_UP DPAD_UP; sleep 1
+shot area-chips
+key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN; sleep 2
 shot area-videos
+
+# Details: hold OK on a video.
 adb shell input keyevent --longpress DPAD_CENTER; sleep 10
 shot details; check "details"
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN; sleep 2
+key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN; sleep 2
 shot details-more
 
-key BACK BACK; sleep 2
+# Back to Home, then the sidebar's Playlists (six below Home).
+key BACK BACK BACK; sleep 3
 key DPAD_LEFT DPAD_LEFT DPAD_LEFT; sleep 2
-key DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
+key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
 shot sidebar-playlists
 key DPAD_CENTER; sleep 10
 shot playlists; check "playlists"
 key DPAD_CENTER; sleep 10
 shot playlist; check "playlist"
+key DPAD_DOWN DPAD_DOWN; sleep 2
+shot playlist-videos
+
+# Categories (one above Playlists).
+key BACK BACK; sleep 3
+key DPAD_LEFT DPAD_LEFT DPAD_LEFT; sleep 2
+key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
+key DPAD_CENTER; sleep 10
+shot categories; check "categories"
 
 adb logcat -d > "$OUT/logcat.txt" 2>/dev/null || true
 adb logcat -d -b crash > "$OUT/crash.txt" 2>/dev/null || true
